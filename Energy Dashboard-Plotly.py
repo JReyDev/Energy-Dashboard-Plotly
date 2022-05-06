@@ -3,7 +3,8 @@
 #README!!!
 #README!!!
 
-#This Dashboard was made to visualize the EIA Weekly Crude Oil Report + Other energy data
+#THIS DASHBOARD WAS MADE TO VISUALIZE THE EIA WEEKLY CRUDE OIL REPORT + OTHERR ENERGY DATA
+#THIS MAY ALSO SERVE AS A TEMPLATE FOR OTHERS!!! HAPPY CODING!
 
 import dash
 from dash import dcc, html, Dash
