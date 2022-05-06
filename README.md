@@ -1,4 +1,4 @@
-# Dash-Plotly
+# Energy Dashboard-Plotly
 
 Code may be a rought draft and be subject to changes as it will be upated occasionally to be more pythonic.
 
