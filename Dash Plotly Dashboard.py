@@ -1,13 +1,17 @@
-#Read Description
-#Read Description
-#Read Description
-#Read Description
+#README!!!
+#README!!!
+#README!!!
+#README!!!
+
+#This Dashboard was made to visualize the EIA Weekly Crude Oil Report + Other energy data
 
 import dash
 from dash import dcc, html, Dash
 import plotly.express as px
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
+
 import pandas as pd
 from pandas.core.common import flatten
 import numpy as np
@@ -34,38 +38,72 @@ tab_selected_style = {
 }
 
 
+#Crude Oil total
+cl_total_data = pd.read_csv('U.S. CL Stock Ending Total Weekly.csv', parse_dates=['Date'],index_col=['Date'])
 
-data_set1 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set2 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set3 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set4 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set5 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set6 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set7 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set8 =  pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set9 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set10 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set11 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set12 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set13 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
-data_set14 = pd.read_csv('DATA DIRECTORY', parse_dates=['Date'],index_col=['Date'])
+#Cl Commercial Total
+cl_comm_total = pd.read_csv('U.S. CL Stock Ending Commercial excl. SPR Wkly.csv', parse_dates=['Date'], index_col=['Date'])
+
+#CL SPR Total
+cl_spr = pd.read_csv('U.S. CL Stock Ending incl. SPR Weekly.csv', parse_dates=['Date'],index_col=['Date'])
+
+
+##Other Stock
+#Total Motor Gasoline
+motor_gas_total = pd.read_csv('U.S. Ending Total Gasoline Weekly.csv',parse_dates=['Date'], index_col = ['Date'])
+
+#Kerosene Type Jet Fuel
+kerosene_jet_fuel = pd.read_csv('U.S. Ending Total Kerosene Type Jet Fuel Weekly.csv',parse_dates=['Date'], index_col = ['Date'])
+
+#Distillate Fuel Oil
+distillate_fuel_oil = pd.read_csv('U.S. Distillate Fuel Oil Stock Ending Weekly.csv',parse_dates=['Date'], index_col = ['Date'])
+
+
+
+#CL Supply
+
+#Domestic Production
+us_dom_prod = pd.read_csv('U.S. Domestic CL Production Weekly.csv',parse_dates=['Date'], index_col = ['Date'])
+
+#Alaska Production
+alaska_prod =  pd.read_csv('U.S. Alaska Production.csv',parse_dates = ['Date'], index_col = ['Date'])
+
+#Lower 48 Production
+lower_48_prod = pd.read_csv('U.S. Lower 48 Field Production.csv',parse_dates = ['Date'], index_col = ['Date'])
+
+#CL Input To Refineries
+cl_input = pd.read_csv('U.S. Refiner Net Input of CL.csv',parse_dates = ['Date'], index_col = ['Date'])
+
+
+
+#CL Net Imports
+cl_net_imports = pd.read_csv('U.S. Net Imports incl. SPR CL Weekly.csv', parse_dates = ['Date'],index_col= ['Date'])
+
+#CL Imports
+cl_imports = pd.read_csv('U.S. Commercial CL Imports excl. SPR.csv', parse_dates=['Date'],index_col=['Date'])
+
+#CL Exports
+cl_exports = pd.read_csv('U.S. CL ExportsWeekly.csv', parse_dates=['Date'],index_col=['Date'])
+
+#Working Storage
+wstorage_df = pd.read_csv('EIA Crude Oil Working Storage.csv', parse_dates=['Date'])
 
 #Data Presets
 
-data_frame1 = pd.DataFrame()
-data_frame1['Column Title'] = data_set1['Quantity']
-data_frame1['Column Title'] = data_set2['Quantity']
-data_frame1['Column Title'] = data_set3['Quantity']
-data_frame1['Column Title'] = data_set4['Quantity']
-data_frame1['Column Title'] = data_set5['Quantity']
-data_frame1['Column Title'] = data_set6['Quantity']
-data_frame1['Column Title'] = data_set7['Quantity']
-data_frame1['Column Title'] = data_set8['Quantity']
-data_frame1['Column Title'] = data_set9['Quantity']
-data_frame1['Column Title'] = data_set10['Quantity']
-data_frame1['Column Title'] = data_set11['Quantity']
-data_frame1['Column Title'] = data_set12['Quantity']
-data_frame1['Column Title'] = data_set13['Quantity']
+comp_set = pd.DataFrame()
+comp_set['Crude Oil Total Inventory'] = cl_total_data['Quantity']
+comp_set['Crude Oil Commercial Total'] = cl_comm_total['Quantity']
+comp_set['Crude Oil SPR'] = cl_spr['Quantity']
+comp_set['Motor Gas Total'] = motor_gas_total['Quantity']
+comp_set['Kerosene Jet Fuel'] = kerosene_jet_fuel['Quantity']
+comp_set['Distillate Fuel Oil'] = distillate_fuel_oil['Quantity']
+comp_set['US Domestic Prod.'] = us_dom_prod['Quantity']
+comp_set['Alaska Production'] = alaska_prod['Quantity']
+comp_set['Lower 48 Production'] = lower_48_prod['Quantity']
+comp_set['Crude Oil Refinery Input'] = cl_input['Quantity']
+comp_set['Crude Oil Net Imports'] = cl_net_imports['Quantity']
+comp_set['Crude Oil Imports'] = cl_imports['Quantity']
+comp_set['Crude Oil Exports'] = cl_exports['Quantity']
 
 app = dash.Dash(__name__,assets_folder='assets')
 
@@ -84,19 +122,19 @@ dcc.Tabs(id = 'main_tabs',
             html.H3('Column 1'),
             dcc.Dropdown(id='Select_Data',
                options=[
-                        {"label": "Data Dropdown", "value": 'fig'},
-                        {"label": "Data Dropdown", "value": 'fig2'},
-                        {"label": "Data Dropdown", "value": 'fig3'},
-                        {"label": "Data Dropdown", "value": 'fig4'},
-                        {"label": "Data Dropdown", "value": 'fig5'},
-                        {"label": "Data Dropdown", "value": 'fig6'},
-                        {"label": "Data Dropdown", "value": 'fig7'},
-                        {"label": "Data Dropdown", "value": 'fig8'},
-                        {"label": "Data Dropdown", "value": 'fig9'},
-                        {"label": "Data Dropdown", "value": 'fig10'},
-                        {"label": "Data Dropdown", "value": 'fig11'},
-                        {"label": "Data Dropdown", "value": 'fig12'},
-                        {"label": "Data Dropdown", "value": 'fig13'},
+                        {"label": "EIA CL Total Stock", "value": 'fig'},
+                        {"label": "EIA CL Commercial Stock", "value": 'fig2'},
+                        {"label": "EIA CL SPR Stock", "value": 'fig3'},
+                        {"label": "EIA Motor Gasoline Total", "value": 'fig4'},
+                        {"label": "EIA Kerosene Type Jet Fuel", "value": 'fig5'},
+                        {"label": "EIA Distillate Fuel Oil", "value": 'fig6'},
+                        {"label": "EIA US Domestic Production", "value": 'fig7'},
+                        {"label": "EIA US Lower 48 Production", "value": 'fig8'},
+                        {"label": "EIA US Alaska Production", "value": 'fig9'},
+                        {"label": "EIA CL Input to Refineries", "value": 'fig10'},
+                        {"label": "EIA US CL Net Imports", "value": 'fig11'},
+                        {"label": "EIA US CL Imports", "value": 'fig12'},
+                        {"label": "EIA US CL Exports", "value": 'fig13'},
                         ],
                 multi=False,
                 value='Default',
@@ -112,19 +150,19 @@ dcc.Tabs(id = 'main_tabs',
             html.H3('Column 2'),
             dcc.Dropdown(id='Select_Data_2',
                options=[
-                        {"label": "Data Dropdown", "value": 'fig'},
-                        {"label": "Data Dropdown", "value": 'fig2'},
-                        {"label": "Data Dropdown", "value": 'fig3'},
-                        {"label": "Data Dropdown", "value": 'fig4'},
-                        {"label": "Data Dropdown", "value": 'fig5'},
-                        {"label": "Data Dropdown", "value": 'fig6'},
-                        {"label": "Data Dropdown", "value": 'fig7'},
-                        {"label": "Data Dropdown", "value": 'fig8'},
-                        {"label": "Data Dropdown", "value": 'fig9'},
-                        {"label": "Data Dropdown", "value": 'fig10'},
-                        {"label": "Data Dropdown", "value": 'fig11'},
-                        {"label": "Data Dropdown", "value": 'fig12'},
-                        {"label": "Data Dropdown", "value": 'fig13'},
+                        {"label": "EIA CL Total Stock", "value": 'fig'},
+                        {"label": "EIA CL Commercial Stock", "value": 'fig2'},
+                        {"label": "EIA CL SPR Stock", "value": 'fig3'},
+                        {"label": "EIA Motor Gasoline Total", "value": 'fig4'},
+                        {"label": "EIA Kerosene Type Jet Fuel", "value": 'fig5'},
+                        {"label": "EIA Distillate Fuel Oil", "value": 'fig6'},
+                        {"label": "EIA US Domestic Production", "value": 'fig7'},
+                        {"label": "EIA US Lower 48 Production", "value": 'fig8'},
+                        {"label": "EIA US Alaska Production", "value": 'fig9'},
+                        {"label": "EIA CL Input to Refineries", "value": 'fig10'},
+                        {"label": "EIA US CL Net Imports", "value": 'fig11'},
+                        {"label": "EIA US CL Imports", "value": 'fig12'},
+                        {"label": "EIA US CL Exports", "value": 'fig13'},
                         ],
                 multi=False,
                 value='Default', 
@@ -146,9 +184,9 @@ dcc.Tabs(id = 'main_tabs',
     html.Div([
         dcc.Dropdown(id = 'Select Data Chart',
             options=[
-                {'label':'Data Dropdown Tab 2','value':'other_fig'},
-                {'label':'Data Dropdown Tab 2','value':'other_fig2'},
-                {'label':'Data Dropdown Tab 2','value':'other_fig3'},
+                {'label':'EIA CL Storage Capacity','value':'other_fig'},
+                {'label':'US Big 3','value':'other_fig2'},
+                {'label':'US Big 4','value':'other_fig3'},
                 ],
                 multi=False,
                 value='Default',
@@ -167,10 +205,10 @@ dcc.Tabs(id = 'main_tabs',
                 html.Div([
         dcc.Dropdown(id = 'main_comparison',
             options=[
-                {'label': s, 'value':s} for s in data_frame1.columns
+                {'label': s, 'value':s} for s in comp_set.columns
                     ],
             multi = True,
-            value = 'First Data set',
+            value = 'Crude Oil Total Inventory',
             style = {'width':'50%'}
             ),
         dcc.Graph(id = 'compare_main', figure = {})
@@ -193,6 +231,7 @@ dcc.Tabs(id = 'main_tabs',
 def output_value(value):
     data = None
     data_p = None
+    chart_title = None
     r_data_p = pd.DataFrame()
     data_p_index = None
     data_p_columns = None
@@ -200,178 +239,84 @@ def output_value(value):
     r_data_p_columns = None
     xx = None
     yy = None
-    chart_title = None
+
     
     if value == 'fig':
-        data = data_set1
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_total_data
+        chart_title = 'CL Stock Complete'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
 
     if value == 'fig2':
-        data = data_set2
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_comm_total
+        chart_title = 'CL Commercial Stock'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
 
     if value == 'fig3':
-        data = data_set3
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_spr
+        chart_title = 'CL SPR Stock'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
 
- 
     if value == 'fig4':
-        data = data_set4
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = motor_gas_total
+        chart_title = 'Motor Gas Stock Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
 
     if value == 'fig5':
-        data = data_set5
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = kerosene_jet_fuel
+        chart_title = 'Kerosene Jet Fuel Stock Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
 
     if value == 'fig6':
-        data = data_set6
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = distillate_fuel_oil
+        chart_title = 'Distillate Fuel Oil Stock Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
-
 
     if value == 'fig7':
-        data = data_set7
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = us_dom_prod
+        chart_title = 'US CL Production Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
-
 
     if value == 'fig8':
-        data = data_set9
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = lower_48_prod
+        chart_title = 'US Lower 48 Production Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
 
     if value == 'fig9':
-        data = data_set8
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = alaska_prod
+        chart_title = 'US Alaska Production Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
-
 
     if value == 'fig10':
-        data = data_set10
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_input
+        chart_title = 'US CL Input to Refineries'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
-
 
     if value == 'fig11':
-        data = data_set11
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_net_imports
+        chart_title = 'US CL Net Imports Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
 
     if value == 'fig12':
-        data = data_set12
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_imports
+        chart_title = 'US CL Imports Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
 
     if value == 'fig13':
-        data = data_set13
-        chart_title = 'Chart Title'
+        data = cl_exports
+        chart_title = 'US CL Exports Total'
+        data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
+
+
+
+    try:
         xx = data.index
         yy = data['Quantity']
-        data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
         data_p_index = data_p.index
         data_p_columns = data_p.columns
         r_data_p = data_p.copy()
         r_data_p_index = r_data_p.index
         r_data_p_columns = r_data_p.columns
 
-    try:
         data_p[2021] = data.loc['2021'].Quantity.values
         data_p[2016] = data.loc['2016'].Quantity.values
         data_p[2010] = data.loc['2010'].Quantity.values
@@ -383,11 +328,10 @@ def output_value(value):
     except:
         pass
 
-
-
     for i in r_data_p.columns:
 
         r_data_p[i] = r_data_p[i]/r_data_p[i].iloc[0] * 100
+        
 
     fig = px.line(data,x = xx, y = yy)
 
@@ -470,175 +414,79 @@ def output_value(value):
     chart_title = None
     
     if value == 'fig':
-        data = data_set1
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_total_data
+        chart_title = 'CL Stock Complete'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
 
     if value == 'fig2':
-        data = data_set2
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_comm_total
+        chart_title = 'CL Commercial Stock'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
 
     if value == 'fig3':
-        data = data_set3
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_spr
+        chart_title = 'CL SPR Stock'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
  
     if value == 'fig4':
-        data = data_set4
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = motor_gas_total
+        chart_title = 'Motor Gas Stock Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
 
     if value == 'fig5':
-        data = data_set5
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = kerosene_jet_fuel
+        chart_title = 'Kerosene Jet Fuel Stock Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
 
     if value == 'fig6':
-        data = data_set6
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = distillate_fuel_oil
+        chart_title = 'Distillate Fuel Oil Stock Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
-
 
     if value == 'fig7':
-        data = data_set7
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = us_dom_prod
+        chart_title = 'US CL Production Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
-
 
     if value == 'fig8':
-        data = data_set9
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = lower_48_prod
+        chart_title = 'US Lower 48 Production Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
 
     if value == 'fig9':
-        data = data_set8
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = alaska_prod
+        chart_title = 'US Alaska Production Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
-
 
     if value == 'fig10':
-        data = data_set10
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_input
+        chart_title = 'US CL Input to Refineries'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
-
 
     if value == 'fig11':
-        data = data_set11
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_net_imports
+        chart_title = 'US CL Net Imports Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
-
 
     if value == 'fig12':
-        data = data_set12
-        chart_title = 'Chart Title'
-        xx = data.index
-        yy = data['Quantity']
+        data = cl_imports
+        chart_title = 'US CL Imports Total'
         data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
-        data_p_index = data_p.index
-        data_p_columns = data_p.columns
-        r_data_p = data_p.copy()
-        r_data_p_index = r_data_p.index
-        r_data_p_columns = r_data_p.columns
 
     if value == 'fig13':
-        data = data_set13
-        chart_title = 'Chart Title'
+        data = cl_exports
+        chart_title = 'US CL Exports Total'
+        data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
+
+    try:
         xx = data.index
         yy = data['Quantity']
-        data_p = pd.pivot_table(data, index = data.index.isocalendar().week , columns = data.index.year, values = 'Quantity')
         data_p_index = data_p.index
         data_p_columns = data_p.columns
         r_data_p = data_p.copy()
         r_data_p_index = r_data_p.index
         r_data_p_columns = r_data_p.columns
 
-    try:
         data_p[2021] = data.loc['2021'].Quantity.values
         data_p[2016] = data.loc['2016'].Quantity.values
         data_p[2010] = data.loc['2010'].Quantity.values
@@ -725,13 +573,13 @@ def output_single(value):
     data = pd.DataFrame()
     chart_title = None
     if value == 'other_fig':
-        data = data_set14
+        data = wstorage_df
         fig = go.Figure()
-        fig.add_trace(go.Bar(name='Chart Title', x=data['Date'],
-                            y=data['Column Name']))
-        fig.add_trace(go.Bar(name='Chart Title', x=data['Date'], 
+        fig.add_trace(go.Bar(name='Working Storage Capacity', x=data['Date'],
+                            y=data['Working Storage Capacity']))
+        fig.add_trace(go.Bar(name='Net CL Stock', x=data['Date'], 
                             y=data['Net Stock (Refinery & Tank Farms)'],
-                            hovertext=data['Column Name']
+                            hovertext=data['Utilization Rate']
                             ))
         fig.update_layout(plot_bgcolor = 'Black',
         paper_bgcolor = 'Black',
@@ -741,12 +589,12 @@ def output_single(value):
         return fig
 
     if value == 'other_fig2':
-        data = data_set2 + data_set4 + data_set6
-        chart_title = 'Chart Title'
+        data = cl_comm_total + motor_gas_total + distillate_fuel_oil
+        chart_title = 'US Big 3 (CL + Gas + Dist)'
 
     if value == 'other_fig3':
-        data = data_set2 + data_set4 + data_set6 + data_set5
-        chart_title = 'Chart Title'
+        data = cl_comm_total + motor_gas_total + distillate_fuel_oil + kerosene_jet_fuel
+        chart_title = 'US Big 4 (CL + Gas + Dist + K. Jet)'
     combo_list = []
     try:
         for x in np.arange(1990,2023):    
@@ -789,7 +637,7 @@ def output_single(value):
 def display_graph(*value):
     df = pd.DataFrame()
     for x in value:
-        df[x] = data_frame1[x]
+        df[x] = comp_set[x]
     
     fig = px.line(df)
 
